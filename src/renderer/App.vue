@@ -6,8 +6,8 @@
 
 <script>
   export default {
-    name: 'git-browser'
-  }
+    name: 'git-browser',
+  };
 </script>
 
 <style>
