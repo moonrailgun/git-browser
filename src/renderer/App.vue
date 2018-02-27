@@ -1,12 +1,15 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <Main />
   </div>
 </template>
 
 <script>
+  import Main from './components/Main';
+
   export default {
     name: 'git-browser',
+    components: { Main },
   };
 </script>
 
