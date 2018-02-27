@@ -51,7 +51,8 @@
               tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
             }
           }
-          console.log(tempRepositoryDir);
+          const logs = await git.getLog(tempRepositoryDir);
+          console.log(logs);
 
           // load ignore file
           // let ignoreFile = await fs.readFile(path.join(tempRepositoryDir, './.gitignore'));
