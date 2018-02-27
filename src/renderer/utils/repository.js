@@ -26,29 +26,19 @@ export default {
     }
     try {
       console.log('[repository]', 'copy start...');
+      console.time('copyTask');
       const isIgnored = await globby.gitignore(repositoryDir);
-      console.log('isIgnored', isIgnored);
-      // TODO
       const paths = walkSync(repositoryDir, { directories: false });
+      const copyTask = [];
       for (let i = 0; i < paths.length; i += 1) {
         const p = paths[i];
-        console.log(p);
+        if (!isIgnored(p)) {
+          copyTask.push(fs.copy(path.join(repositoryDir, p), path.join(tempPath, p)));
+        }
       }
 
-      // fs.copy(repositoryDir, tempPath, {
-      //   filter: () => {
-      //     // const relativePath = path.relative(repositoryDir, src);
-      //     // const isPass = !isIgnored(relativePath);
-      //     const isPass = Math.random() < 0.5;
-      //     console.log(isPass);
-      //     return isPass;
-      //   },
-      // }, (err) => {
-      //   if (err) return console.error(err);
-      //
-      //   console.log('success!');
-      //   return null;
-      // });
+      await Promise.all(copyTask);// 顺序发送异步处理
+      console.timeEnd('copyTask');
       console.log('[repository]', 'copy done:', tempPath);
     } catch (err) {
       console.error(err);
