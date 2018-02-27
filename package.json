@@ -57,11 +57,16 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "electron": "^1.7.5",
     "element-ui": "^2.2.0",
+    "execa": "^0.9.0",
+    "fs-extra": "^5.0.0",
+    "globby": "^8.0.1",
     "vue": "^2.3.3",
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",
-    "vuex": "^2.3.1"
+    "vuex": "^2.3.1",
+    "walk-sync": "^0.3.2"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",
@@ -78,7 +83,6 @@
     "css-loader": "^0.28.4",
     "del": "^3.0.0",
     "devtron": "^1.4.0",
-    "electron": "^1.7.5",
     "electron-debug": "^1.4.0",
     "electron-devtools-installer": "^2.2.0",
     "electron-builder": "^19.19.1",
