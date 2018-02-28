@@ -24,7 +24,8 @@
           请选择文件
         </p>
         <div v-else>
-          <pre>{{currentFileContent}}</pre>
+          <pre v-highlightjs="currentFileContent"><code></code></pre>
+          <!-- <pre v-highlightjs><code class="javascript">const s = new Date().toString()</code></pre> -->
         </div>
       </div>
     </div>
@@ -82,16 +83,17 @@
           }
           this.gitLogs = await git.getLog(tempRepositoryDir);
           this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
+          this.currentHash = this.gitLogs[0].hash;
         } catch (e) {
           console.error(e);
           this.$message.error(e.toString());
         }
       },
       async handleNodeClick(data) {
-        console.log(data);
-        if (data.children) {
+        if (data.type === 'directory' || data.children) {
           return;
         }
+        console.log(data);
 
         const fc = await fs.readFile(data.path, 'utf8');
         this.currentFileContent = fc;
@@ -129,6 +131,10 @@
       flex: 1;
       overflow: auto;
       padding-left: 4px;
+
+      pre {
+        margin: 0;
+      }
     }
   }
 }
