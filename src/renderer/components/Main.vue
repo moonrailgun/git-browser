@@ -1,9 +1,9 @@
 <template>
-  <el-container>
-    <el-header>
+  <el-container class="browser-container">
+    <el-header class="browser-header">
       <el-input v-model="repoUrl" placeholder="请输入项目地址" prefix-icon="el-icon-search" @keyup.enter.native="submitUrl"></el-input>
     </el-header>
-    <el-main>
+    <el-main class="browser-main">
       <router-view></router-view>
     </el-main>
   </el-container>
@@ -39,3 +39,24 @@
     },
   };
 </script>
+
+<style lang="scss">
+body {
+  margin: 0;
+}
+
+.browser-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  .browser-header {
+    padding-top: 10px;
+  }
+
+  .browser-main {
+    flex: 1;
+  }
+}
+
+
+</style>

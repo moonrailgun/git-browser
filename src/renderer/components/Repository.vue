@@ -1,29 +1,50 @@
 <template>
   <div class="repo">
-    <div class="aside">
-      <p v-for="log in gitLogs">
-        {{log.hash.substr(0,6)}} - {{log.subject}}
-      </p>
+    <div class="navigation">
+      <el-select v-model="currentHash" placeholder="请选择" class="commit">
+        <el-option
+          v-for="log in gitLogs"
+          :key="log.hash"
+          :label="log.hash+'-'+log.subject"
+          :value="log.hash">
+        </el-option>
+      </el-select>
+      <span> / {{$route.params.repositoryName}}</span>
     </div>
-    <div class="main">
-      main: {{$route.params.repositoryName}}
+    <div class="info">
+      <div class="tree">
+        <el-tree
+          :data="dirTree"
+          @node-click="handleNodeClick"
+          accordion>
+        </el-tree>
+      </div>
+      <div class="main">
+        <p v-if="!currentFileContent">
+          请选择文件
+        </p>
+        <div v-else>
+          <pre>{{currentFileContent}}</pre>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
   import { mapState } from 'vuex';
-  // import fs from 'fs-extra';
+  import fs from 'fs-extra';
   import path from 'path';
-  // import walkSync from 'walk-sync';
   import git from '../utils/git';
   import repository from '../utils/repository';
 
   export default {
     data() {
       return {
-        dirTree: {},
+        currentHash: '',
+        dirTree: [],
         gitLogs: [],
+        currentFileContent: '',
       };
     },
     computed: {
@@ -59,14 +80,21 @@
               tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
             }
           }
-          const logs = await git.getLog(tempRepositoryDir);
-          this.gitLogs = logs;
-
-          console.log(await repository.getDirTree(tempRepositoryDir));
+          this.gitLogs = await git.getLog(tempRepositoryDir);
+          this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
         } catch (e) {
           console.error(e);
           this.$message.error(e.toString());
         }
+      },
+      async handleNodeClick(data) {
+        console.log(data);
+        if (data.children) {
+          return;
+        }
+
+        const fc = await fs.readFile(data.path, 'utf8');
+        this.currentFileContent = fc;
       },
     },
   };
@@ -75,18 +103,33 @@
 <style lang="scss">
 .repo {
   display: flex;
+  flex-direction: column;
+  height: 100%;
 
-  .aside {
-    width: 200px;
-    overflow: auto;
+  .navigation {
+    margin-bottom: 10px;
 
-    p {
-      margin: 0;
+    .el-select input {
+      user-select: none;
     }
   }
 
-  .main {
-    flex: 1;
+  .info {
+    display: flex;
+    height: 100%;
+
+    .tree {
+      width: 230px;
+      overflow: auto;
+      border-right: 1px solid #eee;
+      user-select: none;
+    }
+
+    .main {
+      flex: 1;
+      overflow: auto;
+      padding-left: 4px;
+    }
   }
 }
 </style>
