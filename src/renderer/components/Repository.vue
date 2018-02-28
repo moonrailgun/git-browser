@@ -1,6 +1,13 @@
 <template>
-  <div>
-    main: {{$route.params.repositoryName}}
+  <div class="repo">
+    <div class="aside">
+      <p v-for="log in gitLogs">
+        {{log.hash.substr(0,6)}} - {{log.subject}}
+      </p>
+    </div>
+    <div class="main">
+      main: {{$route.params.repositoryName}}
+    </div>
   </div>
 </template>
 
@@ -16,6 +23,7 @@
     data() {
       return {
         dirTree: {},
+        gitLogs: [],
       };
     },
     computed: {
@@ -52,27 +60,9 @@
             }
           }
           const logs = await git.getLog(tempRepositoryDir);
-          console.log(logs);
+          this.gitLogs = logs;
 
-          // load ignore file
-          // let ignoreFile = await fs.readFile(path.join(tempRepositoryDir, './.gitignore'));
-          // ignoreFile = ignoreFile.toString().split('\n').filter(i => {
-          //   if (!i) {
-          //     return false;
-          //   }
-          //   if (i.trim()[0] === '#') {
-          //     return false;
-          //   }
-          //   return true;
-          // });
-          // ignoreFile.push('.git');
-
-          // console.log(walkSync(tempRepositoryDir, {
-          //   directories: true,
-          //   ignore: ignoreFile,
-          // }).length);
-          // this.dirTree = walkSync(tempRepositoryDir, { directories: false, ignore: ignoreFile });
-          // console.log(this.dirTree);
+          console.log(await repository.getDirTree(tempRepositoryDir));
         } catch (e) {
           console.error(e);
           this.$message.error(e.toString());
@@ -81,3 +71,22 @@
     },
   };
 </script>
+
+<style lang="scss">
+.repo {
+  display: flex;
+
+  .aside {
+    width: 200px;
+    overflow: auto;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .main {
+    flex: 1;
+  }
+}
+</style>

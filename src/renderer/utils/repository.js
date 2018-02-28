@@ -2,6 +2,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { remote } from 'electron';
 import walkSync from 'walk-sync';
+import dirTree from 'directory-tree';
 import globby from 'globby';
 
 function getTempPath(repositoryName) {
@@ -46,5 +47,19 @@ export default {
     }
 
     return tempPath;
+  },
+  async getDirTree(repositoryDir) {
+    const formatTree = function (dir) {
+      const children = dir.children;
+      dir.label = dir.name;
+      if (children) {
+        for (let i = 0; i < children.length; i++) {
+          formatTree(children[i]);
+        }
+      }
+    };
+    const res = dirTree(repositoryDir);
+    formatTree(res);
+    return res;
   },
 };
