@@ -1,7 +1,7 @@
 <template>
   <div class="repo">
     <div class="navigation">
-      <el-select v-model="currentHash" placeholder="请选择" class="commit">
+      <el-select v-model="currentHash" @change="handleHashChange" placeholder="请选择" class="commit">
         <el-option
           v-for="log in gitLogs"
           :key="log.hash"
@@ -46,6 +46,8 @@
         dirTree: [],
         gitLogs: [],
         currentFileContent: '',
+        currentFileInfo: '',
+        tempRepositoryDir: '',
       };
     },
     computed: {
@@ -81,6 +83,7 @@
               tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
             }
           }
+          this.tempRepositoryDir = tempRepositoryDir;
           this.gitLogs = await git.getLog(tempRepositoryDir);
           this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
           this.currentHash = this.gitLogs[0].hash;
@@ -95,8 +98,19 @@
         }
         console.log(data);
 
+        this.currentFileInfo = data;
         const fc = await fs.readFile(data.path, 'utf8');
         this.currentFileContent = fc;
+      },
+      async handleHashChange() {
+        try {
+          const info = await git.switchHash(this.tempRepositoryDir, this.currentHash);
+          this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];
+          console.log(info);
+        } catch (e) {
+          console.error(e);
+          this.$message.error(e.toString());
+        }
       },
     },
   };
@@ -125,6 +139,12 @@
       overflow: auto;
       border-right: 1px solid #eee;
       user-select: none;
+
+      .is-current > .el-tree-node__content {
+        background-color: #f5f7fa;
+        color: #409EFF;
+        font-weight: 700;
+      }
     }
 
     .main {

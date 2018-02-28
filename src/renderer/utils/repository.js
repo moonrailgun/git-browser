@@ -4,6 +4,7 @@ import { remote } from 'electron';
 import walkSync from 'walk-sync';
 import dirTree from 'directory-tree';
 import globby from 'globby';
+import git from './git';
 
 function getTempPath(repositoryName) {
   return path.join(remote.app.getPath('userData'), './git-browser/repo/', `./${repositoryName}`);
@@ -39,6 +40,7 @@ export default {
       }
 
       await Promise.all(copyTask);// 顺序发送异步处理
+      await git.dropCurrentWorkspace(tempPath); // 去除当前未提交的修改内容
       console.timeEnd('copyTask');
       console.log('[repository]', 'copy done:', tempPath);
     } catch (err) {
@@ -49,7 +51,7 @@ export default {
     return tempPath;
   },
   async getDirTree(repositoryDir) {
-    const formatTree = function (dir) {
+    const formatTree = function formatTree(dir) {
       const children = dir.children;
       dir.label = dir.name;
       if (children) {
