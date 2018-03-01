@@ -67,6 +67,7 @@ export default {
   },
   async switchHash(cwd, hash) {
     if (!cwd) throw new Error('cwd is required!');
+    if (!hash) throw new Error('hash is required!');
     const gc = await execa.shell(`git checkout ${hash}`, {
       cwd,
     });
@@ -75,10 +76,21 @@ export default {
   },
   async getFileDiff(cwd, file, step = 1) {
     if (!cwd) throw new Error('cwd is required!');
+    if (!file) throw new Error('file is required!');
     const gd = await execa.shell(`git diff HEAD~${step}...HEAD ${file}`, {
       cwd,
     });
     const diff = gd.stdout;
     return diff;
   },
+  async getHashFileContent(cwd, hash, file) {
+    if (!cwd) throw new Error('cwd is required!');
+    if (!hash) throw new Error('hash is required!');
+    if (!file) throw new Error('file is required!');
+    const gfc = await execa.shell(`git show ${hash}:${file}`, {
+      cwd,
+    });
+    const diff = gfc.stdout;
+    return diff;
+  }
 };
