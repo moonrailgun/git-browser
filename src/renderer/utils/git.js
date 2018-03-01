@@ -28,6 +28,26 @@ export default {
     console.timeEnd('[git] get log');
     return logs;
   },
+  async getBranch(cwd) {
+    if (!cwd) throw new Error('cwd is required!');
+    const gb = await execa.shell('git branch', {
+      cwd,
+    });
+    let branchs = gb.stdout;
+    let currentBranch = '';
+    branchs = branchs.split('\n').map(line => {
+      const branchName = line.substr(2);
+      if (line[0] === '*') {
+        currentBranch = branchName;
+      }
+      return branchName;
+    });
+
+    return {
+      currentBranch,
+      branchs,
+    };
+  },
   async getLastCommitHash(cwd) {
     if (!cwd) throw new Error('cwd is required!');
     const gl = await execa.shell('git log -1 --format=oneline', {

@@ -9,6 +9,15 @@
           :value="log.hash">
         </el-option>
       </el-select>
+      <span> / </span>
+      <el-select v-model="currentBranch" @change="handleBranchChange" placeholder="请选择" class="commit">
+        <el-option
+          v-for="branch in gitBranchs"
+          :key="branch"
+          :label="branch"
+          :value="branch">
+        </el-option>
+      </el-select>
       <span> / {{$route.params.repositoryName}}</span>
     </div>
     <div class="info">
@@ -43,8 +52,10 @@
     data() {
       return {
         currentHash: '',
+        currentBranch: '',
         dirTree: [],
         gitLogs: [],
+        gitBranchs: [],
         currentFileContent: '',
         currentFileInfo: '',
         tempRepositoryDir: '',
@@ -87,6 +98,9 @@
           this.gitLogs = await git.getLog(tempRepositoryDir);
           this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
           this.currentHash = this.gitLogs[0].hash;
+          const branchInfo = await git.getBranch(tempRepositoryDir);
+          this.currentBranch = branchInfo.currentBranch;
+          this.gitBranchs = branchInfo.branchs;
         } catch (e) {
           console.error(e);
           this.$message.error(e.toString());
@@ -104,17 +118,28 @@
       },
       async handleHashChange() {
         try {
-          const info = await git.switchHash(this.tempRepositoryDir, this.currentHash);
-          this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];// 更新文件树
-          try {
-            this.currentFileContent = await fs.readFile(this.currentFileInfo.path, 'utf8');// 更新文件
-          } catch (e) {
-            this.currentFileContent = null;// 更新文件
-          }
-          console.log(info);
+          await git.switchHash(this.tempRepositoryDir, this.currentHash);
+          this.updateDirTree();
         } catch (e) {
           console.error(e);
           this.$message.error(e.toString());
+        }
+      },
+      async handleBranchChange() {
+        try {
+          await git.switchHash(this.tempRepositoryDir, this.currentBranch);
+          this.updateDirTree();
+        } catch (e) {
+          console.error(e);
+          this.$message.error(e.toString());
+        }
+      },
+      async updateDirTree() {
+        this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];// 更新文件树
+        try {
+          this.currentFileContent = await fs.readFile(this.currentFileInfo.path, 'utf8');// 更新文件
+        } catch (e) {
+          this.currentFileContent = null;// 更新文件
         }
       },
     },
