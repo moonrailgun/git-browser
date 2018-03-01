@@ -34,7 +34,8 @@ export default {
       cwd,
     });
     const lastLog = gl.stdout;
-    return lastLog;
+    const hash = lastLog.split(' ')[0];
+    return hash;
   },
   async dropCurrentWorkspace(cwd) {
     if (!cwd) throw new Error('cwd is required!');

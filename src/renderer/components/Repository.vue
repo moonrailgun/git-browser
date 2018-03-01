@@ -105,7 +105,12 @@
       async handleHashChange() {
         try {
           const info = await git.switchHash(this.tempRepositoryDir, this.currentHash);
-          this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];
+          this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];// 更新文件树
+          try {
+            this.currentFileContent = await fs.readFile(this.currentFileInfo.path, 'utf8');// 更新文件
+          } catch (e) {
+            this.currentFileContent = null;// 更新文件
+          }
           console.log(info);
         } catch (e) {
           console.error(e);
