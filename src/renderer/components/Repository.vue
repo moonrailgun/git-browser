@@ -1,16 +1,16 @@
 <template>
   <div class="repo">
     <div class="navigation">
-      <el-select v-model="currentHash" @change="handleHashChange" placeholder="请选择" class="commit">
+      <el-select v-model="currentHash" @change="handleHashChange" placeholder="请选择commit" class="commit">
         <el-option
           v-for="log in gitLogs"
           :key="log.hash"
-          :label="log.hash+'-'+log.subject"
+          :label="log.hash.substr(0,6)+' - '+log.subject"
           :value="log.hash">
         </el-option>
       </el-select>
       <span> / </span>
-      <el-select v-model="currentBranch" @change="handleBranchChange" placeholder="请选择" class="commit">
+      <el-select v-model="currentBranch" @change="handleBranchChange" placeholder="请选择分支" class="branch">
         <el-option
           v-for="branch in gitBranchs"
           :key="branch"
@@ -24,6 +24,8 @@
       <div class="tree">
         <el-tree
           :data="dirTree"
+          node-key="label"
+          :default-expanded-keys="[$route.params.repositoryName]"
           @node-click="handleNodeClick"
           accordion>
         </el-tree>

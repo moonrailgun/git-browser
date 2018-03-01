@@ -51,10 +51,12 @@ body {
   height: 100vh;
   .browser-header {
     padding-top: 10px;
+    border-bottom: 1px solid #eee;
   }
 
   .browser-main {
     flex: 1;
+    padding: 16px 20px;
   }
 }
 
