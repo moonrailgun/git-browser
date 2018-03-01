@@ -39,10 +39,12 @@ export default {
         }
       }
 
+      console.log('[repository]', 'copy task run...size:', copyTask.length);
       await Promise.all(copyTask);// 顺序发送异步处理
+      console.log('[repository]', 'start drop uncommited content...');
       await git.dropCurrentWorkspace(tempPath); // 去除当前未提交的修改内容
       console.timeEnd('copyTask');
-      console.log('[repository]', 'copy done:', tempPath);
+      console.log('[repository]', 'create repository done:', tempPath);
     } catch (err) {
       console.error(err);
       await fs.remove(tempPath);

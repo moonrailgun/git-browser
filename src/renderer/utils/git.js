@@ -73,4 +73,12 @@ export default {
     const info = gc.stdout;
     return info;
   },
+  async getFileDiff(cwd, file, step = 1) {
+    if (!cwd) throw new Error('cwd is required!');
+    const gd = await execa.shell(`git diff HEAD~${step}...HEAD ${file}`, {
+      cwd,
+    });
+    const diff = gd.stdout;
+    return diff;
+  },
 };

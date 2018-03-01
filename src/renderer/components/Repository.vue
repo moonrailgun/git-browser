@@ -18,7 +18,12 @@
           :value="branch">
         </el-option>
       </el-select>
-      <span> / {{$route.params.repositoryName}}</span>
+      <span> / {{$route.params.repositoryName}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <el-checkbox v-model="isDiffMode" label="比对模式" @change="updateFileContent" border></el-checkbox>
+      <span v-if="isDiffMode">
+        <span>比对步数:</span>
+        <el-input-number v-model="diffStep" controls-position="right" @change="updateFileContent" :min="1" :max="10"></el-input-number>
+      </span>
     </div>
     <div class="info">
       <div class="tree">
@@ -59,8 +64,10 @@
         gitLogs: [],
         gitBranchs: [],
         currentFileContent: '',
-        currentFileInfo: '',
+        currentFileInfo: null,
         tempRepositoryDir: '',
+        isDiffMode: false,
+        diffStep: 1,
       };
     },
     computed: {
@@ -115,8 +122,7 @@
         console.log(data);
 
         this.currentFileInfo = data;
-        const fc = await fs.readFile(data.path, 'utf8');
-        this.currentFileContent = fc;
+        this.updateFileContent();
       },
       async handleHashChange() {
         try {
@@ -139,9 +145,26 @@
       async updateDirTree() {
         this.dirTree = [await repository.getDirTree(this.tempRepositoryDir)];// 更新文件树
         try {
-          this.currentFileContent = await fs.readFile(this.currentFileInfo.path, 'utf8');// 更新文件
+          this.updateFileContent();
         } catch (e) {
           this.currentFileContent = null;// 更新文件
+        }
+      },
+      async updateFileContent() {
+        if (!this.isDiffMode) {
+          // 显示文件内容
+          console.log('显示文件内容');
+          if (this.currentFileInfo && this.currentFileInfo.path) {
+            this.currentFileContent = await fs.readFile(this.currentFileInfo.path, 'utf8');// 更新文件
+          }
+        } else {
+          // 显示diff
+          console.log('显示diff');
+          if (this.currentFileInfo && this.currentFileInfo.path) {
+            const filepath = path.relative(this.tempRepositoryDir, this.currentFileInfo.path);
+            this.currentFileContent = await git.getFileDiff(this.tempRepositoryDir,
+              filepath, this.diffStep);// 更新文件
+          }
         }
       },
     },
