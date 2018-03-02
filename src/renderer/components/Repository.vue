@@ -36,12 +36,11 @@
         </el-tree>
       </div>
       <div class="main">
-        <p v-if="!currentFileContent">
+        <p v-if="!currentFileContent || !currentFileInfo">
           请选择文件
         </p>
         <div v-else>
           <pre v-highlightjs="currentFileContent"><code></code></pre>
-          <!-- <pre v-highlightjs><code class="javascript">const s = new Date().toString()</code></pre> -->
         </div>
       </div>
     </div>

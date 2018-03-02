@@ -92,5 +92,5 @@ export default {
     });
     const diff = gfc.stdout;
     return diff;
-  }
+  },
 };

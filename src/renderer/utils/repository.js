@@ -39,8 +39,8 @@ export default {
         }
       }
 
-      console.log('[repository]', 'copy task run...size:', copyTask.length);
-      await Promise.all(copyTask);// 顺序发送异步处理
+      console.log('[repository]', 'copy task run... size:', copyTask.length);
+      await Promise.all(copyTask);// 顺序发送异步处理   //TODO:需要优化, 改为使用copy的过滤方法否则大文件无法正常复制
       console.log('[repository]', 'start drop uncommited content...');
       await git.dropCurrentWorkspace(tempPath); // 去除当前未提交的修改内容
       console.timeEnd('copyTask');
