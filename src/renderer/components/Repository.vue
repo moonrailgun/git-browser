@@ -36,12 +36,11 @@
         </el-tree>
       </div>
       <div class="main">
-        <p v-if="!currentFileContent || !currentFileInfo">
+        <p v-if="!currentFileContent && !currentFileInfo">
           请选择文件
         </p>
-        <div v-else>
-          <pre v-highlightjs="currentFileContent"><code></code></pre>
-        </div>
+        <!-- <pre v-else v-highlightjs="currentFileContent"><code></code></pre> -->
+        <Code v-else :code="currentFileContent" :key="Math.random()" />
       </div>
     </div>
   </div>
@@ -53,6 +52,7 @@
   import path from 'path';
   import git from '../utils/git';
   import repository from '../utils/repository';
+  import Code from './Shared/Code';
 
   export default {
     data() {
@@ -73,6 +73,9 @@
       ...mapState({
         repoUrl: state => state.Global.repoUrl,
       }),
+    },
+    components: {
+      Code,
     },
     mounted() {
       this.init();

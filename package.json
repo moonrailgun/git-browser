@@ -57,6 +57,7 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
+    "code-prettify": "^0.1.0",
     "directory-tree": "^2.0.0",
     "electron": "^1.7.5",
     "element-ui": "^2.2.0",

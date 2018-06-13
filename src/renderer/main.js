@@ -7,6 +7,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import VueHighlightJS from 'vue-highlightjs';
 import 'highlight.js/styles/default.css';
 
+import './global.css';
 import App from './App';
 import router from './router';
 import store from './store';
