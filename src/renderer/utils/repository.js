@@ -6,7 +6,7 @@ import dirTree from 'directory-tree';
 import globby from 'globby';
 import git from './git';
 
-function getTempPath(repositoryName) {
+function getTempPath(repositoryName = '') {
   return path.join(remote.app.getPath('userData'), './git-browser/repo/', `./${repositoryName}`);
 }
 
@@ -65,5 +65,16 @@ export default {
     const res = dirTree(repositoryDir);
     formatTree(res);
     return res;
+  },
+  async downRepository(url) {
+    console.log('start download repository:', url);
+    let tmp = url.split('/');
+    tmp = tmp[tmp.length - 1];
+    tmp = tmp.split('.');
+    const repoName = tmp[0];
+    const repoPath = getTempPath(repoName);
+    await fs.remove(repoPath);
+    await git.clone(getTempPath(), url);
+    return repoPath;
   },
 };

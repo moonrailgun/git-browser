@@ -12,6 +12,7 @@
 <script>
   import fs from 'fs-extra';
   import path from 'path';
+  import repository from '../utils/repository';
 
   export default {
     computed: {
@@ -31,10 +32,27 @@
         const isExists = await fs.pathExists(oriRepositoryDir);
         if (isExists) {
           const repositoryName = path.basename(oriRepositoryDir);
-          this.$router.push(`/repository/${repositoryName}`);
+          this.switchToRepository(repositoryName);
+        } else if (oriRepositoryDir.startsWith('http')) {
+          // 下载项目
+          const loading = this.$loading({
+            lock: true,
+            text: '正在下载项目',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.7)',
+          });
+          const repositoryPath = await repository.downRepository(oriRepositoryDir);
+          const repositoryName = path.basename(repositoryPath);
+          loading.close();
+
+          this.repoUrl = repositoryPath;
+          this.switchToRepository(repositoryName);
         } else {
           this.$message.warning('该项目不存在');
         }
+      },
+      switchToRepository(repositoryName) {
+        this.$router.push(`/repository/${repositoryName}`);
       },
     },
   };

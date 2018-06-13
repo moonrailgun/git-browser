@@ -93,4 +93,10 @@ export default {
     const diff = gfc.stdout;
     return diff;
   },
+  async clone(cwd, url) {
+    const gc = await execa.shell(`git clone ${url}`, {
+      cwd,
+    });
+    return gc.stdout;
+  },
 };

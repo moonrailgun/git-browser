@@ -16,6 +16,10 @@ Vue.use(ElementUI);
 Vue.use(VueHighlightJS);
 Vue.http = Vue.prototype.$http = axios;
 Vue.config.productionTip = false;
+Vue.config.errorHandler = (error, vm) => {
+  console.error(error, vm);
+  vm.$message.error(error.toString());
+};
 
 /* eslint-disable no-new */
 new Vue({

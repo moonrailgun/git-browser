@@ -78,41 +78,47 @@
       this.init();
     },
     beforeRouteUpdate() {
-      console.log('update');
+      console.log('route update');
       this.init();
     },
     methods: {
+      dataClear() {
+        this.currentHash = '';
+        this.currentBranch = '';
+        this.gitBranchs = [];
+        this.dirTree = [];
+        this.gitLogs = [];
+        this.currentFileContent = '';
+      },
       async init() {
-        try {
-          // init temp repo
-          const oriRepositoryDir = this.repoUrl;
-          const repositoryName = path.basename(oriRepositoryDir);
-          let tempRepositoryDir = await repository.getTempRepositoryDir(repositoryName);
-          console.log('临时项目地址:', tempRepositoryDir);
-          if (!tempRepositoryDir) {
-            // 未创建的话先创建
-            tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
-          } else {
-            // 已创建的话检测是否最近版本
-            const oriLastCommit = await git.getLastCommitHash(oriRepositoryDir);
-            const tempLastCommit = await git.getLastCommitHash(tempRepositoryDir);
+        // init temp repo
+        console.log('init');
+        const oriRepositoryDir = this.repoUrl;
+        const repositoryName = path.basename(oriRepositoryDir);
+        let tempRepositoryDir = await repository.getTempRepositoryDir(repositoryName);
+        console.log('临时项目地址:', tempRepositoryDir);
+        this.dataClear();
 
-            if (oriLastCommit !== tempLastCommit) {
-              // 临时项目文件夹不匹配需要更新
-              tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
-            }
+        if (!tempRepositoryDir) {
+          // 未创建的话先创建
+          tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
+        } else {
+          // 已创建的话检测是否最近版本
+          const oriLastCommit = await git.getLastCommitHash(oriRepositoryDir);
+          const tempLastCommit = await git.getLastCommitHash(tempRepositoryDir);
+
+          if (oriLastCommit !== tempLastCommit) {
+            // 临时项目文件夹不匹配需要更新
+            tempRepositoryDir = await repository.createTempRepositoryDir(oriRepositoryDir);
           }
-          this.tempRepositoryDir = tempRepositoryDir;
-          this.gitLogs = await git.getLog(tempRepositoryDir);
-          this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
-          this.currentHash = this.gitLogs[0].hash;
-          const branchInfo = await git.getBranch(tempRepositoryDir);
-          this.currentBranch = branchInfo.currentBranch;
-          this.gitBranchs = branchInfo.branchs;
-        } catch (e) {
-          console.error(e);
-          this.$message.error(e.toString());
         }
+        this.tempRepositoryDir = tempRepositoryDir;
+        this.gitLogs = await git.getLog(tempRepositoryDir);
+        this.dirTree = [await repository.getDirTree(tempRepositoryDir)];
+        this.currentHash = this.gitLogs[0].hash;
+        const branchInfo = await git.getBranch(tempRepositoryDir);
+        this.currentBranch = branchInfo.currentBranch;
+        this.gitBranchs = branchInfo.branchs;
       },
       async handleNodeClick(data) {
         if (data.type === 'directory' || data.children) {
